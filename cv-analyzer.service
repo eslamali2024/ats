@@ -1,0 +1,39 @@
+[Unit]
+Description=CV Analyzer FastAPI Service
+Documentation=https://fastapi.tiangolo.com/
+After=network.target
+
+[Service]
+Type=notify
+User=username
+WorkingDirectory=/home/username/public_html/cv-analyzer-service
+Environment="PATH=/home/username/public_html/cv-analyzer-service/venv/bin"
+Environment="PYTHONUNBUFFERED=1"
+ExecStart=/home/username/public_html/cv-analyzer-service/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8001 --workers 4 --log-level info
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=60s
+StartLimitBurst=3
+
+# Process management
+KillMode=mixed
+KillSignal=SIGTERM
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Resource limits
+LimitNOFILE=65535
+
+# Logging
+StandardOutput=append:/home/username/public_html/cv-analyzer-service/logs/app.log
+StandardError=append:/home/username/public_html/cv-analyzer-service/logs/error.log
+
+# Timeouts
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

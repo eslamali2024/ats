@@ -1,0 +1,31 @@
+# CV Analyzer Service - Apache Configuration
+
+# Enable mod_proxy if available
+<IfModule mod_proxy.c>
+    ProxyPreserveHost On
+    
+    # Proxy all requests to the FastAPI application running on port 8001
+    ProxyPass / http://127.0.0.1:8001/
+    ProxyPassReverse / http://127.0.0.1:8001/
+</IfModule>
+
+# Alternative: If mod_proxy is not available, use mod_rewrite
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # Skip rewriting for actual files and directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Proxy to FastAPI application
+    RewriteRule ^(.*)$ http://127.0.0.1:8001/$1 [P,L]
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

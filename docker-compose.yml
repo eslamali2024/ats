@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  cv-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cv-analyzer-service
+    ports:
+      - "8001:8001"
+    environment:
+      - ENV=production
+      - DEBUG=False
+      - API_HOST=0.0.0.0
+      - API_PORT=8001
+      - LOG_LEVEL=info
+      - LARAVEL_APP_URL=${LARAVEL_APP_URL:-http://localhost}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost}
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+    networks:
+      - cv-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - redis
+    labels:
+      - "com.example.description=CV Analyzer FastAPI Service"
+
+  redis:
+    image: redis:7-alpine
+    container_name: cv-analyzer-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - cv-network
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  redis-data:
+
+networks:
+  cv-network:
+    driver: bridge
