@@ -10,7 +10,7 @@ return [
 
     'cv_analyzer' => [
         // The base URL of the CV Analyzer service
-        'url' => env('CV_ANALYZER_API_URL', 'http://localhost:8001'),
+        'url' => env('CV_ANALYZER_API_URL', 'http://159.69.75.59:8001'),
         
         // Request timeout in seconds
         'timeout' => env('CV_ANALYZER_TIMEOUT', 30),
